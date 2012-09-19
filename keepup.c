@@ -9,10 +9,10 @@ void monitor(char *process) {
 
   switch (pid) {
     case -1:
-      exit(1);
+      exit(EXIT_FAILURE);
     case 0:
       execl("/bin/sh", "sh", "-c", process, NULL);
-      exit(1);
+      exit(EXIT_FAILURE);
     default:
       waitpid(pid, &status, 0);
 
@@ -24,11 +24,11 @@ void monitor(char *process) {
 
 int daemonize() {
   if (fork()) {
-    exit(0);
+    exit(EXIT_SUCCESS);
   }
 
   if (setsid() < 0) {
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
   close(STDIN_FILENO);
