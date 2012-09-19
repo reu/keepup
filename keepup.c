@@ -3,8 +3,10 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 
+pid_t pid;
+
 void monitor(char *process) {
-  pid_t pid = fork();
+  pid = fork();
   int status;
 
   switch (pid) {
@@ -36,6 +38,11 @@ int daemonize() {
   close(STDERR_FILENO);
 }
 
+void safe_exit() {
+  kill(pid, SIGTERM);
+  exit(EXIT_FAILURE);
+}
+
 int main(int argc, char **argv) {
   char *process;
   int daemon = 0;
@@ -58,6 +65,9 @@ int main(int argc, char **argv) {
 
     process = arg;
   }
+
+  signal(SIGTERM, &safe_exit);
+  signal(SIGQUIT, &safe_exit);
 
   if (daemon) {
     daemonize();
