@@ -22,8 +22,47 @@ void monitor(char *process) {
   }
 }
 
+int daemonize() {
+  if (fork()) {
+    exit(0);
+  }
+
+  if (setsid() < 0) {
+    exit(1);
+  }
+
+  close(STDIN_FILENO);
+  close(STDOUT_FILENO);
+  close(STDERR_FILENO);
+}
+
 int main(int argc, char **argv) {
-  char *process = argv[1];
+  char *process;
+  int daemon = 0;
+
+  int i;
+  for (i = 1; i < argc; i++) {
+    char *arg = argv[i];
+
+    if (strcmp("-d", arg) == 0 || strcmp("--daemon", arg) == 0) {
+      daemon = 1;
+      continue;
+    }
+
+    if (strcmp("-h", arg) == 0 || strcmp("--help", arg) == 0) {
+      puts("usage: keepup [options] [command]");
+      puts("-d --daemonize");
+      puts("-h --help");
+      continue;
+    }
+
+    process = arg;
+  }
+
+  if (daemon) {
+    daemonize();
+  }
+
   monitor(process);
 
   return 0;
