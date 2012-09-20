@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
   for (i = 1; i < argc; i++) {
     char *arg = argv[i];
 
-    if (strcmp("-d", arg) == 0 || strcmp("--daemon", arg) == 0) {
+    if (strcmp("-d", arg) == 0 || strcmp("--daemonize", arg) == 0) {
       daemon = 1;
       continue;
     }
