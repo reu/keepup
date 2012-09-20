@@ -6,10 +6,9 @@
 pid_t pid;
 
 void monitor(char *process) {
-  pid = fork();
   int status;
 
-  switch (pid) {
+  switch (pid = fork()) {
     case -1:
       exit(EXIT_FAILURE);
     case 0:
