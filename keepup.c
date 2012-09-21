@@ -38,7 +38,12 @@ int daemonize() {
   close(STDERR_FILENO);
 }
 
-void safe_exit() {
+void sigquit_safe_exit() {
+  kill(pid, SIGQUIT);
+  exit(EXIT_FAILURE);
+}
+
+void sigterm_safe_exit() {
   kill(pid, SIGTERM);
   exit(EXIT_FAILURE);
 }
@@ -66,8 +71,8 @@ int main(int argc, char **argv) {
     process = arg;
   }
 
-  signal(SIGTERM, &safe_exit);
-  signal(SIGQUIT, &safe_exit);
+  signal(SIGTERM, &sigterm_safe_exit);
+  signal(SIGQUIT, &sigquit_safe_exit);
 
   if (daemon) {
     daemonize();
