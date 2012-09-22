@@ -10,11 +10,14 @@ void monitor(char *process) {
 
   switch (pid = fork()) {
     case -1:
+      // We could't fork
       exit(EXIT_FAILURE);
     case 0:
+      // Child process: exec the process command
       execl("/bin/sh", "sh", "-c", process, NULL);
       exit(EXIT_FAILURE);
     default:
+      // Parent process: waits the child and then restarts it
       waitpid(pid, &status, 0);
       monitor(process);
   }
