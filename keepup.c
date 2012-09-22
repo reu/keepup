@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
       puts("usage: keepup [options] [command]");
       puts("-d --daemonize");
       puts("-h --help");
-      continue;
+      exit(EXIT_SUCCESS);
     }
 
     process = arg;
