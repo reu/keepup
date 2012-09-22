@@ -16,10 +16,7 @@ void monitor(char *process) {
       exit(EXIT_FAILURE);
     default:
       waitpid(pid, &status, 0);
-
-      if (WIFEXITED(status) || WIFSIGNALED(status)) {
-        monitor(process);
-      }
+      monitor(process);
   }
 }
 
