@@ -6,6 +6,9 @@
 #include <sys/types.h>
 
 pid_t pid;
+
+char *error_command;
+
 char *pidfile_path;
 char *keepup_pidfile_path;
 
@@ -46,6 +49,12 @@ void monitor(char *process) {
 
       // Waits the child and then restarts it
       waitpid(pid, &status, 0);
+
+      // In case we have an error callback, execute it
+      if (error_command) {
+        system(error_command);
+      }
+
       monitor(process);
   }
 }
@@ -101,11 +110,17 @@ int main(int argc, char **argv) {
       continue;
     }
 
+    if (strcmp("-e", arg) == 0 || strcmp("--error-command", arg) == 0) {
+      error_command = argv[++i];
+      continue;
+    }
+
     if (strcmp("-h", arg) == 0 || strcmp("--help", arg) == 0) {
       puts("usage: keepup [options] [command]");
       puts("-d --daemonize");
       puts("-p --pidfile <path>");
       puts("-k --keepup-pidfile <path>");
+      puts("-e --error-command <command>");
       puts("-h --help");
       exit(EXIT_SUCCESS);
     }
