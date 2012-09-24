@@ -7,6 +7,7 @@
 
 pid_t pid;
 char *pidfile_path;
+char *keepup_pidfile_path;
 
 void write_pidfile(char *path, pid_t pid) {
   int size = sizeof(pid) + 1;
@@ -70,6 +71,10 @@ void safe_exit(int sig) {
     remove_pidfile(pidfile_path);
   }
 
+  if (keepup_pidfile_path) {
+    remove_pidfile(keepup_pidfile_path);
+  }
+
   exit(EXIT_FAILURE);
 }
 
@@ -91,10 +96,16 @@ int main(int argc, char **argv) {
       continue;
     }
 
+    if (strcmp("-k", arg) == 0 || strcmp("--keepup-pidfile", arg) == 0) {
+      keepup_pidfile_path = argv[++i];
+      continue;
+    }
+
     if (strcmp("-h", arg) == 0 || strcmp("--help", arg) == 0) {
       puts("usage: keepup [options] [command]");
       puts("-d --daemonize");
       puts("-p --pidfile <path>");
+      puts("-k --keepup-pidfile <path>");
       puts("-h --help");
       exit(EXIT_SUCCESS);
     }
@@ -107,6 +118,10 @@ int main(int argc, char **argv) {
 
   if (daemon) {
     daemonize();
+  }
+
+  if (keepup_pidfile_path) {
+    write_pidfile(keepup_pidfile_path, getpid());
   }
 
   monitor(process);
