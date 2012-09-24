@@ -63,8 +63,8 @@ int daemonize() {
   close(STDERR_FILENO);
 }
 
-void safe_exit() {
-  kill(pid, SIGTERM);
+void safe_exit(int sig) {
+  kill(pid, sig);
 
   if (pidfile_path) {
     remove_pidfile(pidfile_path);
