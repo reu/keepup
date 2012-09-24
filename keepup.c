@@ -1,9 +1,28 @@
+#include <stdio.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/types.h>
 
 pid_t pid;
+char *pidfile_path;
+
+void write_pidfile(char *path, pid_t pid) {
+  int size = sizeof(pid) + 1;
+
+  char buffer[size];
+  snprintf(buffer, size, "%d", pid);
+
+  int fd = open(path, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+  write(fd, buffer, size);
+
+  close(fd);
+}
+
+void remove_pidfile(char *path) {
+  remove(path);
+}
 
 void monitor(char *process) {
   int status;
@@ -17,7 +36,14 @@ void monitor(char *process) {
       execl("/bin/sh", "sh", "-c", process, NULL);
       exit(EXIT_FAILURE);
     default:
-      // Parent process: waits the child and then restarts it
+      // Parent process
+
+      // Writes the pidfile
+      if (pidfile_path) {
+        write_pidfile(pidfile_path, pid);
+      }
+
+      // Waits the child and then restarts it
       waitpid(pid, &status, 0);
       monitor(process);
   }
@@ -39,6 +65,11 @@ int daemonize() {
 
 void safe_exit() {
   kill(pid, SIGTERM);
+
+  if (pidfile_path) {
+    remove_pidfile(pidfile_path);
+  }
+
   exit(EXIT_FAILURE);
 }
 
@@ -55,9 +86,15 @@ int main(int argc, char **argv) {
       continue;
     }
 
+    if (strcmp("-p", arg) == 0 || strcmp("--pidfile", arg) == 0) {
+      pidfile_path = argv[++i];
+      continue;
+    }
+
     if (strcmp("-h", arg) == 0 || strcmp("--help", arg) == 0) {
       puts("usage: keepup [options] [command]");
       puts("-d --daemonize");
+      puts("-p --pidfile <path>");
       puts("-h --help");
       exit(EXIT_SUCCESS);
     }
