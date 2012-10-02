@@ -5,10 +5,10 @@ all:
 	$(CC) keepup.c -o keepup
 
 install: all
-	cp -f keepup $(DESTDIR)$(PREFIX)/bin/keepup
+	cp -f keepup $(PREFIX)/bin/keepup
 
 uninstall:
-	rm -f $(DESTDIR)$(PREFIX)/bin/keepup
+	rm -f $(PREFIX)/bin/keepup
 
 clean:
 	rm -f keepup
