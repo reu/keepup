@@ -1,7 +1,7 @@
 # Keepup
 Automatically monitor, restart, daemonize and warn about process failures without any complicated DSL.
 
-Keepup was written with simplicity in mind, so it just monitors and automatic restart a single process. It has a very simple codebase (with less than 200 lines of ANSI C) and no dependencies.
+Keepup was written with simplicity in mind, so it just monitors and automatic restart a single process. It has a very simple codebase (less than 150 lines of ANSI C) and no dependencies.
 
 ## Usage
 
