@@ -3,6 +3,10 @@ Automatically monitor, restart, daemonize and notify about process failures with
 
 Keepup was written with simplicity in mind, so it just monitors and automatic restart a single process. It has a very simple codebase (less than 150 lines of ANSI C) and no dependencies.
 
+## Installation
+
+Clone the repository or copy the files to a local folder and run `make install`.
+
 ## Usage
 
 ```
