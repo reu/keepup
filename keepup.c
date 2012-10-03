@@ -28,7 +28,7 @@ void remove_pidfile(char *path) {
   remove(path);
 }
 
-void monitor(char *process) {
+void monitor(char *process, int max_retries) {
   int status;
 
   switch (pid = fork()) {
@@ -55,7 +55,14 @@ void monitor(char *process) {
         system(error_command);
       }
 
-      monitor(process);
+      // Check if we can retry the process if informed a maximum number of retries
+      if (max_retries) {
+        if (--max_retries == 0) {
+          exit(EXIT_SUCCESS);
+        }
+      }
+
+      monitor(process, max_retries);
   }
 }
 
@@ -90,6 +97,7 @@ void safe_exit(int sig) {
 int main(int argc, char **argv) {
   char *process;
   int daemon = 0;
+  int max_retries = 0;
 
   int i;
   for (i = 1; i < argc; i++) {
@@ -110,6 +118,11 @@ int main(int argc, char **argv) {
       continue;
     }
 
+    if (strcmp("-r", arg) == 0 || strcmp("--max-retries", arg) == 0) {
+      max_retries = atoi(argv[++i]);
+      continue;
+    }
+
     if (strcmp("-e", arg) == 0 || strcmp("--error-command", arg) == 0) {
       error_command = argv[++i];
       continue;
@@ -120,6 +133,7 @@ int main(int argc, char **argv) {
       puts("-d --daemonize");
       puts("-p --pidfile <path>");
       puts("-k --keepup-pidfile <path>");
+      puts("-r --max-retries <number>");
       puts("-e --error-command <command>");
       puts("-h --help");
       exit(EXIT_SUCCESS);
@@ -139,7 +153,7 @@ int main(int argc, char **argv) {
     write_pidfile(keepup_pidfile_path, getpid());
   }
 
-  monitor(process);
+  monitor(process, max_retries);
 
   return 0;
 }

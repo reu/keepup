@@ -11,6 +11,7 @@ keepup [options] [command]
 -d --daemonize                 Daemonize the process
 -p --pidfile <path>            Writes a pidfile for the monitored process
 -k --keepup-pidfile <path>     Writes a pidfile for the keepup process
+-r --max-retries <number>      Inform the maximum number of allowed retries. When it is set to 0, the process will retry infinitely. Default is 0.
 -e --error-command <command>   Execute <command> when the process fail
 ```
 
